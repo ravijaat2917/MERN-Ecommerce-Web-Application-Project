@@ -1,6 +1,6 @@
 import { comparePassword, hashPassword } from "../helpers/authHelper.js";
 import userModel from "../models/userModel.js";
-import JWT from 'jsonwebtoken';
+import JWT from "jsonwebtoken";
 
 const registerController = async (req, res) => {
   try {
@@ -59,50 +59,49 @@ const registerController = async (req, res) => {
 };
 
 // POST || LOGIN
-const loginController  = async(req , res) =>{
+const loginController = async (req, res) => {
   try {
-    const {email , password} = req.body;
+    const { email, password } = req.body;
     //Validation
-    if(!email || !password){
+    if (!email || !password) {
       return res.status(404).send({
         success: false,
         message: "Invalid Email or Password",
       });
     }
     //check User
-    const user = await userModel.findOne({email});
-    if(!user){
+    const user = await userModel.findOne({ email });
+    if (!user) {
       return res.status(404).send({
-        success:false,
-        message:"Email not Registered..."
-      })
+        success: false,
+        message: "Email not Registered...",
+      });
     }
     // Compare Password
-    const passwordMatched = await comparePassword(password ,user.password );
+    const passwordMatched = await comparePassword(password, user.password);
 
-    if(!passwordMatched){
+    if (!passwordMatched) {
       return res.status(200).send({
-        success:false,
-        message:"Incorrect Password"
-      })
+        success: false,
+        message: "Incorrect Password",
+      });
     }
 
-    const token = JWT.sign({ _id: user._id } , process.env.JWT_SECRET  , {
-      expiresIn:"7d"
-    })
+    const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
     console.log(process.env.JWT_SECRET);
     res.status(200).send({
-      success:true,
-      message:"Login Successfully",
-      user:{
-        name:user.name,
-        email:user.email,
-        phone:user.phone,
-        address:user.address
+      success: true,
+      message: "Login Successfully",
+      user: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
       },
-      token
-    })
-
+      token,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -111,12 +110,12 @@ const loginController  = async(req , res) =>{
       error,
     });
   }
-}
+};
 
 // Test Controller
-const testController = (req,res) =>{
+const testController = (req, res) => {
   console.log("Protected Route");
   res.send("Protected Route");
-}
+};
 
-export { registerController , testController  , loginController};
+export { registerController, testController, loginController };

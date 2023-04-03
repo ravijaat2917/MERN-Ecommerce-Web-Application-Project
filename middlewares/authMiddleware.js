@@ -8,7 +8,7 @@ export const requireSignIn = async (req, res, next) => {
       req.headers.authorization,
       process.env.JWT_SECRET
     );
-    req.user = decode ;
+    req.user = decode;
     next();
   } catch (error) {
     console.log(error);
@@ -30,8 +30,8 @@ export const isAdmin = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.status(401).send({
-        error ,
-        message:"Error in Admin Middleware"
-    })
+      error,
+      message: "Error in Admin Middleware",
+    });
   }
 };
