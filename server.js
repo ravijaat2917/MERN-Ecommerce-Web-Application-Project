@@ -1,29 +1,49 @@
 import express from "express";
+import colors from "colors";
 import dotenv from "dotenv";
-import authRoutes from "./routes/authRoute.js";
-import "colors";
-
-dotenv.config();
-const port = process.env.PORT || 8080;
-const MongoDB_URL = process.env.MONGO_URL;
 import morgan from "morgan";
 import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoute.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import cors from "cors";
+import path from 'path';
+import { fileURLToPath } from "url";
 
-// Rest object
-const app = express();
-app.use(morgan("dev"));
-app.use(express.json());
+//configure env
+dotenv.config();
 
-// Connection to MongoDB DataBase
+//databse config
 connectDB();
 
-// routes
+//rest object
+const app = express();
+
+//middelwares
+app.use(cors());
+app.use(express.json());
+app.use(morgan("dev"));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// console.log(path.join(__dirname));
+app.use(express.static(path.join(__dirname)));
+
+//routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1/product", productRoutes);
 
-// Rest Api
-app.get("/", (req, res) => res.send({ messege: "Welcome" }));
+//rest api
+app.use("*", function (req, res) {
+  res.sendFile(path.join(__dirname,'/client/build/index.html'));
+});
+//PORT
+const PORT = process.env.PORT || 8080;
 
-// Listen App
-app.listen(port, () =>
-  console.log(`Server Listening on PORT : ${port}`.bgCyan.white)
-);
+//run listen
+app.listen(PORT, () => {
+  console.log(
+    `Server Running on ${process.env.DEV_MODE} mode on port ${PORT}`.bgCyan
+      .white
+  );
+});
